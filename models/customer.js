@@ -1,21 +1,21 @@
 module.exports = function(sequelize, DataTypes) {
-	var Burger = sequelize.define("burger", {
+	var Customer = sequelize.define("customer", {
 		id: {
 			type: DataTypes.INTEGER,
 			allowNull: false,
 			primaryKey: true,
 			autoIncrement: true
 		},
-		burger_name: {
+		customer_name: {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
-		devoured: {
-			type: DataTypes.BOOLEAN,
-			defaultValue: false
+		burger_id: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
 		}
 	}, {
     timestamps: false
 	});
-	return Burger;
+	return Customer;
 }

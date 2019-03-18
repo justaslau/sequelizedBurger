@@ -1,37 +1,57 @@
-var express = require("express");
-
-var router = express.Router();
-var burger = require("../models/burger.js");
-
+const express = require("express");
+const router = express.Router();
+const db = require("../models");
 // get route -> index
 router.get("/", function(req, res) {
-  res.redirect("/burgers");
+	res.redirect("/burgers");
 });
 
+// @route    GET /burgers
+// @desc     Get all burgers from database
+// @access   Public
 router.get("/burgers", function(req, res) {
-    res.render("index");
+
+  db.burger.findAll({
+		include: [{
+			model: db.customer,
+		}]
+	}).then(results => {
+    res.render("index", {
+			burger_data: results
+		});
+	});
+
 });
 
-// // post route -> back to index
-// router.post("/burgers/create", function(req, res) {
-//   // takes the request object using it as input for burger.addBurger
-//   burger.create(req.body.burger_name, function(result) {
-//     // wrapper for orm.js that using MySQL insert callback will return a log to console,
-//     // render back to index with handle
-//     console.log(result);
-//     res.redirect("/");
-//   });
-// });
+// @route    POST /burgers
+// @desc     Update burgers' devour status
+// @access   Public
+router.post("/burgers", function(req, res) {
+	db.burger.update({
+		devoured: true,
+	}, {
+		where: {
+			id: req.body.id
+		}
+	}).then(results => {
+    db.customer.create({
+      customer_name: req.body.customer,
+      burger_id: req.body.id
+    }).then(results => {
+      res.sendStatus(200);
+    }).catch(err => console.log(err));
+	});
+});
 
-// // put route -> back to index
-// router.put("/burgers/:id", function(req, res) {
-//   burger.update(req.params.id, function(result) {
-//     // wrapper for orm.js that using MySQL update callback will return a log to console,
-//     // render back to index with handle
-//     console.log(result);
-//     // Send back response and let page reload from .then in Ajax
-//     res.sendStatus(200);
-//   });
-// });
+// @route    POST /burgers/create
+// @desc     Add burger to database
+// @access   Public
+router.post("/burgers/create", function(req, res) { 
+  db.burger.create({
+		burger_name: req.body.burger_name
+	}).then(results => {
+    res.redirect("/");
+	}).catch(err => console.log(err));
+});
 
 module.exports = router;

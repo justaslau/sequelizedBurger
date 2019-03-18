@@ -34,4 +34,6 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+db.burger.hasOne(db.customer, {foreignKey: 'burger_id'});
+
 module.exports = db;
